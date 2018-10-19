@@ -18,17 +18,34 @@ namespace OpencartAPITest
 
     public class Logic
     {
+        public string GetResponceContent(string URLEnd, Method method, Dictionary<string, string> parameters = null) {
+            var client = new RestClient(GlobalData.URL + URLEnd);
+
+            var request = new RestRequest(method);
+
+            foreach (var current in parameters) {
+                request.AddParameter(current.Key, current.Value);
+            }
+
+            return client.Execute(request).Content;
+        }
+
+
         public string GetApiToken() {
-            var client = new RestClient(GlobalData.URL + "login");
 
-            var request = new RestRequest(Method.POST);
-            request.AddParameter("username", GlobalData.username);
-            request.AddParameter("key", GlobalData.key);
+            Dictionary<string, string> parameters = new Dictionary<string, string>();
+            parameters.Add("username",GlobalData.username);
+            parameters.Add("key",GlobalData.key);
 
-            var response = client.Execute(request);
-            
-            LoginMessage login = JsonConvert.DeserializeObject<LoginMessage>(response.Content);
+            LoginMessage login = JsonConvert.DeserializeObject<LoginMessage>(
+                GetResponceContent("login", Method.POST, parameters)
+                );
             return login.api_token;
         }
+
+        public string ApiSetCurrency(string code) {
+            return "";
+        }
+
     }
 }
